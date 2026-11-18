@@ -42,5 +42,18 @@ jobs:
           node --check index.js
           node --check client.js
 
+      # A version is immutable: re-running the job for an already released tag
+      # (for example after a retry) must not turn red, it should just skip.
+      - name: Check whether this version is already published
+        id: version
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if npm view "dsh-model-provider-badge@$version" version --registry=https://registry.npmjs.org >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish to npm
+        if: steps.version.outputs.published != 'true'
         run: npm publish --provenance --access public
