@@ -1,0 +1,58 @@
+{
+  "name": "dsh-model-provider-badge",
+  "version": "0.1.0",
+  "description": "Show the provider route name beside the model name in the DeepSeek Harness composer.",
+  "type": "module",
+  "license": "MIT",
+  "author": "fishdivinity",
+  "homepage": "https://github.com/fishdivinity/dsh-model-provider-badge",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fishdivinity/dsh-model-provider-badge"
+  },
+  "bugs": {
+    "url": "https://github.com/fishdivinity/dsh-model-provider-badge/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "model-provider",
+    "llm",
+    "badge"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale",
+    "icon.svg",
+    "README.md",
+    "README-zh.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "dsh": ">=0.2.1-rc.2 <0.3.0-0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-model-selection"
+      ]
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Model provider badge",
+    "description": "Shows the provider route name beside the model name in the composer, so a relayed or subscription-served model never looks like the vendor's own API."
+  }
+}

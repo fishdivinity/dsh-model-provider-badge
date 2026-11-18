@@ -1,0 +1,46 @@
+name: Release
+
+# A tag is the release unit: it pins the exact commit the npm tarball is built
+# from. No branch push can publish by accident.
+on:
+  push:
+    tags:
+      - 'v*'
+
+# `id-token: write` is what lets npm verify this run through OIDC (trusted
+# publishing). No NPM_TOKEN secret exists, so a leaked repository cannot publish.
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Node 24 ships npm 11, the first line with trusted publishing.
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      # Guard against a mistyped tag: npm versions are immutable, so the wrong
+      # number must fail here rather than occupy a version forever.
+      - name: Check tag matches package version
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          test "v$version" = "$GITHUB_REF_NAME" || {
+            echo "tag $GITHUB_REF_NAME does not match package version v$version"
+            exit 1
+          }
+
+      # Both files are plain browser/host scripts with no build step; parsing
+      # them is the whole check this package needs.
+      - name: Syntax check
+        run: |
+          node --check index.js
+          node --check client.js
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
